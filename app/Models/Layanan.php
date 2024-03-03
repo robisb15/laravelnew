@@ -18,6 +18,7 @@ class Layanan extends Model
         'keterangan',
         'status',
         'urut',
+        'kode'
     
     ];
     public $incrementing = false;

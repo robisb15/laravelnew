@@ -16,7 +16,7 @@
              <div class="nav-item d-flex align-items-center">
                  <a class="btn " href="{{ url('/p-desa/pendaftaran') }}" class="menu-link">
                      <i class="menu-icon tf-icons bx bx-home-circle"></i>
-                     <div data-i18n="Analytics " >Pendaftaran</div>
+                     <div data-i18n="Analytics " >Riwayat</div>
                  </a>
              </div>
          </div>
@@ -25,7 +25,7 @@
          <ul class="navbar-nav flex-row align-items-center ms-auto">
              <!-- Place this tag where you want the button to render. -->
 
-
+            <li><a href="{{ route('inbox.index') }}" class="badge text-bg-warning me-5"><i class=" bx bx-envelope bx-md"></i></a></li>
              <!-- User -->
              <li class="nav-item navbar-dropdown dropdown-user dropdown">
                  <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown">

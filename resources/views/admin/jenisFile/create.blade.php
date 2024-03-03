@@ -23,22 +23,40 @@
                             @csrf
                             <div class="mt-3">
 
-                                <label for="">Nama</label> <span>(wajib)</span>
+                                <label for="">Nama</label> <span
+                                        class="badge text-bg-danger">Wajib</span>
                                 <input type="text" name="nama" class="form-control" required>
                             </div>
                             <div class="mt-3">
-                                <label for="">Keterangan</label><span>(wajib)</span>
-                                <input type="text" name="keterangan" class="form-control" required>
-
+                                <label for="">Keterangan</label><span
+                                        class="badge text-bg-danger">Wajib</span>
+                               
+                                <textarea name="keterangan" id=""  rows="3" required class="form-control"></textarea>
                             </div>
-                            <div class="mt-3">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mt-3">
 
-                                <label for="">Status</label>
-                                <select name="status" id="status" class="form-control">
-                                    <option value="1">Aktif</option>
-                                    <option value="0">Tidak Aktif</option>
-                                </select>
+                                        <label for="">Status</label>
+                                        <select name="status" id="status" class="form-control">
+                                            <option value="1">Aktif</option>
+                                            <option value="0">Tidak Aktif</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mt-3">
+
+                                        <label for="">Multiple Files</label>
+                                        <select name="multiple" id="multiple" class="form-control">
+                                            <option value="0">Tidak </option>
+                                            <option value="1">Ya</option>
+                                        </select>
+                                    </div>
+                                </div>
                             </div>
+
+
                             <div class="mt-3">
 
                                 <label for="">File</label>

@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('nama');
             $table->string('keterangan');
             $table->integer('status');
+            $table->integer('multiple_files')$table->string('keterangan');;
             $table->string('id_berkas')->nullable();
             $table->timestamps();
              $table->softDeletes();

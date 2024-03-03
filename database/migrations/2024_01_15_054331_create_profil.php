@@ -14,10 +14,9 @@ return new class extends Migration
         Schema::create('profil', function (Blueprint $table) {
             $table->string('id_profil')->primaryKey();
             $table->string('id_user');
-            $table->string('nip');
             $table->string('nama');
             $table->string('alamat');
-            $table->string('telepom');
+            $table->string('telepon');
             $table->timestamps();
             $table->softDeletes();
         });

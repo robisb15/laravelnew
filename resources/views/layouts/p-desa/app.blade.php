@@ -27,7 +27,7 @@
       content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"
     />
 
-    <title>Pegawai Desa | Dukcapil</title>
+    <title>Pegawai Desa | AYUNDA</title>
 
     <meta name="description" content="" />
 
@@ -49,12 +49,13 @@
     <link rel="stylesheet" href="{{ asset('GP8JKaiUUser') }}/assets/vendor/css/core.css" class="template-customizer-core-css" />
     <link rel="stylesheet" href="{{ asset('GP8JKaiUUser') }}/assets/vendor/css/theme-default.css" class="template-customizer-theme-css" />
     <link rel="stylesheet" href="{{ asset('GP8JKaiUUser') }}/assets/css/demo.css" />
-
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
     <!-- Vendors CSS -->
     <link rel="stylesheet" href="{{ asset('GP8JKaiUUser') }}/assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.css" />
 
     <link rel="stylesheet" href="{{ asset('GP8JKaiUUser') }}/assets/vendor/libs/apex-charts/apex-charts.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/css/bootstrap.min.css">
+         <link href="https://unpkg.com/filepond@^4/dist/filepond.css" rel="stylesheet" />
     <!-- Page CSS -->
 
     <!-- Helpers -->
@@ -66,6 +67,55 @@
         <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.8/css/dataTables.jqueryui.min.css" />
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+   
+    @livewireStyles
+<style>.avatar {
+    height: 50px;
+    width: 50px;
+}
+.list-group-item:hover, .list-group-item:focus {
+    background: rgba(24,32,23,0.37);
+    cursor: pointer;
+}
+.chatbox {
+    height: 80vh !important;
+    overflow-y: scroll;
+}
+.message-box {
+    height: 70vh !important;
+    overflow-y: scroll;display:flex; flex-direction:column-reverse;
+}
+.single-message {
+    background: #f1f0f0;
+    border-radius: 12px;
+    padding: 10px;
+    margin-bottom: 10px;
+    width: fit-content;
+}
+.received {
+    margin-right: auto !important;
+}
+.sent {
+    margin-left: auto !important;
+    background :#3490dc;
+    color: white!important;
+}
+.sent small {
+    color: white !important;
+}
+.link:hover {
+    list-style: none !important;
+    text-decoration: none;
+}
+.online-icon {
+    font-size: 11px !important;
+}
+#file-area {
+    cursor: pointer;
+}
+#file-area > label > input {
+    display: none !important;
+}</style>
   </head>
 
   <body>
@@ -125,9 +175,13 @@
     <script src="https://cdn.datatables.net/1.13.8/js/dataTables.jqueryui.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.1/dist/jquery.validate.min.js"></script>
     {{-- <script src="https://code.jquery.com/jquery-3.5.0.js"></script>  --}}
-    @stack('scripts')
-
-    <!-- Place this tag in your head or just before your close body tag. -->
     <script async defer src="https://buttons.github.io/buttons.js"></script>
+    <script src="https://unpkg.com/filepond@^4/dist/filepond.js"></script>
+    @stack('scripts')
+      @livewireScripts
+       <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  
+  <x-livewire-alert::scripts />
+    <!-- Place this tag in your head or just before your close body tag. -->
   </body>
 </html>

@@ -2,8 +2,7 @@
 
 
 <!-- Modal -->
-<div class="modal fade" id="exampleModal-selesai" tabindex="-1" aria-labelledby="exampleModalLabel"
-    aria-hidden="true">
+<div class="modal fade" id="exampleModal-selesai" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
@@ -13,8 +12,13 @@
             <div class="modal-body">
                 <div class="row">
                     <div class="col-md-12">
-                        <iframe id="pdf" src ="{{ route('storage.view', $pendaftaran->id_berkas) }}" width="100%"
-                            height="450px"></iframe>
+                         @php
+                            $file = $pendaftaran->nama_file;
+                            $nama_file = str_replace('.pdf', '', $file);
+                        @endphp
+                        <iframe id="pdf"
+                            src ="{{ url('/files/download/' . $nama_file . '?id_berkas=' . $pendaftaran->id_berkas) }}"
+                            width="100%" height="450px"></iframe>
                     </div>
 
                 </div>

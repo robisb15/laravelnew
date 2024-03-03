@@ -13,8 +13,13 @@
             <div class="modal-body">
                 <div class="row">
                     <div class="col-md-12">
-                        <iframe id="pdf" src ="{{ route('storage.view', $item->id_berkas) }}" width="100%"
-                            height="450px"></iframe>
+                        @php
+                            $file = $item->nama_file;
+                            $nama_file = str_replace('.pdf', '', $file);
+                        @endphp
+                        <iframe id="pdf"
+                            src ="{{ url('/files/download/' . $nama_file . '?id_berkas=' . $item->id_berkas) }}"
+                            width="100%" height="450px"></iframe>
                     </div>
 
                 </div>

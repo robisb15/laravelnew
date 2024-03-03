@@ -11,10 +11,11 @@
                     </div>
 
                     <br>
-                    <a href={{ route('rincian-formulir.tambah', [$layanan->id_layanan]) }} class="btn btn-primary">Tambah
-                        Formulir</a>
+                    <a href={{ route('rincian-formulir.tambah', [$layanan->id_layanan]) }}
+                        class="btn btn-success btn-sm mt-3"><i class="fa-solid fa-plus"></i> Tambah
+                    </a>
 
-                     <div class="bg-white table-responsive m-3 p-3">
+                    <div class="bg-white table-responsive m-3 p-3">
                         <table class="table table-responsive table-bordered table-hover">
                             <thead>
                                 <th>No</th>
@@ -23,7 +24,7 @@
                                 <th width="20%">Isi</th>
                                 <th>Tag</th>
                                 <th>Status</th>
-                                <th  width="20%">Urut</th>
+                                <th width="20%">Urut</th>
                                 <th>Aksi</th>
                             </thead>
                             <tbody>
@@ -79,8 +80,7 @@
                                 return 'Teks';
                             } else if (data == 'number') {
                                 return 'Angka';
-                            }
-                            else if (data == 'textarea') {
+                            } else if (data == 'textarea') {
                                 return 'Teks Area';
                             }
                         }
@@ -109,15 +109,23 @@
                     {
                         data: 'tag'
                     },
-                    {
-                        data: 'status',
-                        name: 'status',
+                   {
+                        data: 'status_layanan',
+                        name: 'status_layanan',
                         render: function(data, type, full, meta) {
-                            if (data == 1) {
-                                return 'Aktif';
+                               if (data.status == 1) {
+                                status_layanan = '<span class="badge text-bg-success m-1">Aktif</span>';
                             } else {
-                                return 'NonAktif';
+                                status_layanan =  '<span class="badge text-bg-danger m-1">NonAktif</span>';
                             }
+                            return '<div>' + status_layanan +
+                                '<form action="{{ route('rincian-formulir.status', '') }}/' +
+                                data.id_rincian_formulir + '" method="post">' +
+                                '@csrf' +
+                                '@method('PUT')' +
+                                '<button type="submit" class="btn btn-primary btn-sm"><i class="fa-solid fa-arrows-rotate"></i></button>' +
+                                '</form>' +
+                                '</div>'
                         }
 
                     },
@@ -132,14 +140,14 @@
                                 '{{ method_field('PUT') }}' +
 
                                 '<div class="row">' +
-                                     '<div class="col-md-7">' +
+                                '<div class="col-md-7">' +
                                 '<input type="number" min="1" value="' + data['urut'] +
                                 '" class="form-control" name="urut" >' +
                                 '</div>' +
-                                         '<div class="col-md-5">' +
+                                '<div class="col-md-5">' +
                                 '<button type="submit" class="btn btn-sm btn-primary p-2 mt-1">' +
                                 '<i class="fa fa-check"></i></button>' +
-                                    '</div>' +
+                                '</div>' +
                                 '</div>' +
                                 '</form>';
                         },
@@ -147,43 +155,7 @@
                     {
                         data: 'aksi',
                         name: 'aksi',
-                        render: function(data, type, full, meta) {
-                            var status = '';
-
-                            if (data.status == 1) {
-                                status = '<li>' +
-                                    '<form action="{{ route('rincian-formulir.status', '') }}/' +
-                                    data.id_rincian_formulir + '" method="post">' +
-                                    '@csrf' +
-                                    '@method('PUT')' +
-                                    '<input type="hidden" name="status" value="0">' +
-                                    '<button type="submit" class="dropdown-item">NonAktif</button>' +
-                                    '</form>' +
-                                    '</li>';
-                            } else {
-                                status = '<li>' +
-                                    '<form action="{{ url('admin/rincian-formulir/status/') }}/' +
-                                    data.id_rincian_formulir + '" method="post">' +
-                                    '@csrf' +
-                                    '@method('PUT')' +
-                                    '<input type="hidden" name="status" value="1">' +
-                                    '<button type="submit" class="dropdown-item">Aktif</button>' +
-                                    '</form>' +
-                                    '</li>';
-                            }
-
-                            return '<div class="dropdown">' +
-                                '<button class="btn btn-warning dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">' +
-                                'Aksi' +
-                                '</button>' +
-                                '<ul class="dropdown-menu">' +
-                                '<li>' + unescapeHTML(data.edit) + '</li>' +
-                                '<li>' + unescapeHTML(data.delete) + '</li>' +
-                                '<li>' + unescapeHTML(status) + '</li>' +
-                                '</ul>' +
-                                '</div>' +
-                                '</li>';
-                        }
+                        
 
                     },
                 ],
@@ -201,7 +173,7 @@
             $('#modal-form form').attr('action', url);
         }
 
-        function editForm(url, nama, jenis,tag) {
+        function editForm(url, nama, jenis, tag) {
             $('#modal-form-edit').modal('show');
             $('#modal-form-edit .modal-title').text('Edit layanan');
 
@@ -213,8 +185,8 @@
 
             // Use .val() to set the value of the input field
             $('#modal-form-edit [name=jenis]').attr('value', jenis);
-             $('#modal-form-edit [name=nama]').attr('value', nama);
-              $('#modal-form-edit [name=tag]').attr('value', tag);
+            $('#modal-form-edit [name=nama]').attr('value', nama);
+            $('#modal-form-edit [name=tag]').attr('value', tag);
 
         }
 

@@ -53,8 +53,8 @@
                     <div class="col-md-6">
                         <div class="mt-3">
 
-                                <label for="">NIP</label> 
-                                <input type="text" name="nip" class="form-control" required value="{{ old('nip') }}">
+                                <label for="">NIK</label> 
+                                <input type="text" name="nik" class="form-control" required value="{{ old('nik') }}">
                             </div>
                             
                             <div class="mt-3">
@@ -76,3 +76,4 @@
         </div>
     </div>
 @endsection
+

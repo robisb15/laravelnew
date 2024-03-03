@@ -22,27 +22,35 @@
                             @csrf
                             <div class="row">
                                 <div class="col-md-12">
-                                    <label for="" class="mt-3">Nama Layanan</label><span> (wajib)</span>
-                            <input type="text" name="nama_layanan" class="form-control " required>
+                                    <label for="" class="mt-3">Nama Layanan</label> <span
+                                        class="badge text-bg-danger">Wajib</span>
+                                    <input type="text" name="nama_layanan" class="form-control " required>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col-md-12">
-                                     <label for=""class="mt-3">keterangan</label><span> (wajib)</span>
-                            <input type="text" name="keterangan" class="form-control" required>
+                                    <label for=""class="mt-3">keterangan</label> <span
+                                        class="badge text-bg-danger">Wajib</span>
+                                    <input type="text" name="keterangan" class="form-control" required>
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-md-6">
-                                      <label for=""class="mt-3">Status</label>
-                            <select name="status" id="status" class="form-control">
-                                <option value="1">Aktif</option>
-                                <option value="0">Tidak Aktif</option>
-                            </select>
+                                <div class="col-md-4">
+                                    <label for=""class="mt-3">Status</label>
+                                    <select name="status" id="status" class="form-control">
+                                        <option value="1">Aktif</option>
+                                        <option value="0">Tidak Aktif</option>
+                                    </select>
                                 </div>
-                                <div class="col-md-6">
-                                    <label for=""class="mt-3">Urut</label><span> (wajib)</span>
-                           <input type="number" name="urut" class="form-control" required>
+                                <div class="col-md-4">
+                                    <label for=""class="mt-3">Urut</label> <span
+                                        class="badge text-bg-danger">Wajib</span>
+                                    <input type="number" name="urut" class="form-control" required>
+                                </div>
+                                <div class="col-md-4">
+                                    <label for=""class="mt-3">Kode</label> <span
+                                        class="badge text-bg-danger">Wajib</span>
+                                    <input type="text" name="kode" class="form-control" required>
                                 </div>
                             </div>
                             <button type="submit" class="btn btn-sm btn-primary mt-3">Simpan</button>

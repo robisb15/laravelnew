@@ -21,6 +21,7 @@ class Pendaftaran extends Model
         'keterangan',
         'user_id',
         'urut',
+        'admin_id',
     
     ];
     public $incrementing = false;

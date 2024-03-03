@@ -20,8 +20,8 @@
 
                     <label for="" class="mt-3">Wajib</label>
                     <select name="wajib" id="status" class="form-control">
-                        <option value="1">Aktif</option>
-                        <option value="0">Tidak Aktif</option>
+                        <option value="1">Ya</option>
+                        <option value="0">Tidak</option>
                     </select>
                 
                 </div>

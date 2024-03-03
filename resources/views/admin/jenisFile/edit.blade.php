@@ -11,12 +11,15 @@
                 <div class="modal-body">
                     <div class="mt-3">
 
-                                <label for="">Nama</label> <span>(wajib)</span>
+                                <label for="">Nama </label><span
+                                        class="badge text-bg-danger mb-1 ms-1">Wajib</span>
                                 <input type="text" name="nama" class="form-control" required>
                             </div>
                             <div class="mt-3">
-                                <label for="">Keterangan</label><span>(wajib)</span>
-                                <input type="text" name="keterangan" class="form-control" required>
+                                <label for="">Keterangan </label><span
+                                        class="badge text-bg-danger mb-1 ms-1">Wajib</span>
+                              
+                                <textarea name="keterangan" id="" rows="3" class="form-control"></textarea>
 
                             </div>
         

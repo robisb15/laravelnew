@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="utf-8">
-    <title>Pemerintah Dukcapil Tebo</title>
+    <title>AYUNDA</title>
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <meta content="" name="keywords">
     <meta content="" name="description">
@@ -31,6 +31,26 @@
 
     <!-- Template Stylesheet -->
     <link href="{{ asset('ioekHH56home') }}/css/style.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap">
+    <style>
+        @keyframes slideInFromLeft {
+            0% {
+                transform: translateX(-100%);
+                opacity: 0;
+            }
+
+            100% {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .animated-text {
+            animation: slideInFromLeft 1s ease-out forwards;
+        }
+    </style>
 </head>
 
 <body>
@@ -49,7 +69,8 @@
         <div class="row align-items-center top-bar">
             <div class="col-lg-3 col-md-12 text-center text-lg-start">
                 <a href="" class="navbar-brand m-0 p-0">
-                    <h1 class="text-primary m-0">Dukcapil Tebo</h1>
+                    <h1 class="text-primary m-0">AYUNDA</h1>
+
                 </a>
             </div>
             <div class="col-lg-9 col-md-12 text-end">
@@ -68,7 +89,7 @@
     <div class="container-fluid nav-bar bg-light">
         <nav class="navbar navbar-expand-lg navbar-light bg-white p-3 py-lg-0 px-lg-4">
             <a href="" class="navbar-brand d-flex align-items-center m-0 p-0 d-lg-none">
-                <h1 class="text-primary m-0">Dukcapil Tebo</h1>
+                <h1 class="text-primary m-0">AYUNDA</h1>
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
                 <span class="fa fa-bars"></span>
@@ -102,18 +123,25 @@
     <div class="container-fluid p-0 mb-5">
         <div class="position-relative">
             <div class="position-relative">
-                <img class="img-fluid" src="{{ asset('ioekHH56home') }}/img/dukcapil.webp" alt=""
+                <img class="img-fluid" src="{{ asset('ioekHH56home') }}/img/dukcapil.png" alt=""
                     style="width: 100%; height: 100%;">
                 <div class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center"
                     style="background: rgba(0, 0, 0, .4);">
                     <div class="container">
                         <div class="row justify-content-start">
                             <div class="col-10 col-lg-8">
-                                <h1 class="text-white text-uppercase mb-3 animated slideInDown">Selamat Datang di
-                                    Dukcapil Tebo</h1>
-                                <p class="fs-5 fw-medium text-white mb-4 pb-2">Kami memberikan pelayanan terbaik dalam
-                                    mengelola data kependudukan.</p>
+                                <h1 class="text-white text-uppercase mb-1 animated-text"
+                                    style="font-family: 'Montserrat', sans-serif; font-size: 3rem; font-weight: bold;">
+                                    Selamat Datang di AYUNDA</h1>
+
+                                <p class="fs-5 fw-medium text-white mb-4 pb-2"
+                                    style="font-family: 'Open Sans', sans-serif; font-size: 1.2rem;">Aplikasi Pelayanan
+                                    Kependudukan di Desa</p>
+                                <p class="fs-5 fw-medium text-white mb-4 pb-2"
+                                    style="font-family: 'Roboto', sans-serif; font-size: 1.2rem;">Kami memberikan
+                                    pelayanan terbaik dalam mengelola data kependudukan.</p>
                             </div>
+
                         </div>
                     </div>
                 </div>
@@ -199,19 +227,18 @@
                     <div class="text-center text-lg-start wow fadeInUp" data-wow-delay="0.1s">
                         <h6 class="text-secondary text-uppercase">Layanan Kami</h6>
                     </div>
-                    <div class="owl-carousel service-carousel position-relative wow fadeInUp" data-wow-delay="0.1s">
-                        @foreach ($layanan as $item)
-                            <div class="bg-light p-4">
-                                <div class="d-flex align-items-center justify-content-center border border-5 border-white mb-4"
-                                    style="width: 75px; height: 75px;">
-                                    <i class="fa fa-file fa-2x text-primary"></i>
-                                </div>
-                                <h4 class="mb-3">{{ $item->nama_layanan }}</h4>
-                                <p>{{ $item->keterangan }}</p>
+                   <div class="owl-carousel service-carousel position-relative wow fadeInUp" data-wow-delay="0.1s">
+    @foreach ($layanan as $item)
+        <div class="item bg-light p-4">
+            <div class="d-flex align-items-center justify-content-center border border-5 border-white mb-4" style="height: 150px;">
+                <img src="{{ asset('img/layanan.png') }}" alt="" style="max-width: 100%; max-height: 100%;">
+            </div>
+            <h4 class="mb-3">{{ $item->nama_layanan }}</h4>
+            <p>{{ $item->keterangan }}</p>
+        </div>
+    @endforeach
+</div>
 
-                            </div>
-                        @endforeach
-                    </div>
                 </div>
             </div>
         </div>
@@ -241,6 +268,12 @@
                     <p class="mb-4">08.00 - 14.00 </p>
                     <h6 class="text-light">Jumat:</h6>
                     <p class="mb-0">08.00 - 11.30 </p>
+                </div>
+                <div class="col-lg-6 col-md-12">
+                    <iframe
+                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3988.5174425672776!2d102.35689367425047!3d-1.463157635843503!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e2ebe6dead9cc5b%3A0x6d1da470bf121deb!2sDINAS%20DUKCAPIL%20TEBO!5e0!3m2!1sid!2sid!4v1707184902453!5m2!1sid!2sid"
+                        width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy"
+                        referrerpolicy="no-referrer-when-downgrade"></iframe>
                 </div>
             </div>
         </div>

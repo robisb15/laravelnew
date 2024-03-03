@@ -33,13 +33,18 @@ class JenisFileController extends Controller
         return datatables()->
             of($data)
             ->addIndexColumn()
-            ->addColumn('aksi', function ($data) {
+            ->addColumn('status_layanan', function ($data) {
                 return [
                     'id_jenis_file' => $data->id_jenis_file,
-                    'status' => $data->status,
-                    'delete' => '<a href="javascript:;" onclick="deleteForm(\'' . route('jenis-file.destroy', [$data->id_jenis_file]) . '\')" class="dropdown-item">Hapus</a>',
-                    'edit' => '<a href="javascript:;" onclick="editForm(\'' . route('jenis-file.update', [$data->id_jenis_file]) . '\', \'' . $data->nama . '\',\' ' . $data->keterangan . '\')" class="dropdown-item">Edit</a>',
+                    'status' => $data->status
                 ];
+            })
+            ->addColumn('aksi', function ($data) {
+                return
+                    ' <div class="">
+                  <a href="javascript:;" onclick="editForm(\'' . route('jenis-file.update', [$data->id_jenis_file]) . '\', \'' . $data->nama . '\',\' ' . $data->keterangan . '\')" class="btn btn-warning btn-sm"> <i class="fa-solid fa-pen"></i></a>
+                  <a href="javascript:;" onclick="deleteForm(\'' . route('jenis-file.destroy', [$data->id_jenis_file]) . '\')" class="btn btn-danger btn-sm"> <i class="fa-solid fa-trash"></i></a>
+            </div>';
             })
             ->addColumn('file', function ($data) {
                 if ($data->url) {
@@ -66,14 +71,17 @@ class JenisFileController extends Controller
     }
     public function store(Request $request)
     {
+        
         $request->validate([
             'nama' => 'required',
             'keterangan' => 'required',
             'status' => 'required',
+            'multiple' => 'required',
         ], [
             'nama.required' => 'Nama harus diisi',
             'keterangan.required' => 'Keterangan harus diisi',
-            'status.required' => 'Statust harus diisi',
+            'status.required' => 'Status harus diisi',
+            'multiple.required' => 'Multiple Files harus diisi',
         ]);
         if ($request->file) {
             $file = $request->file;
@@ -96,6 +104,7 @@ class JenisFileController extends Controller
             'keterangan' => $request->keterangan,
             'status' => $request->status,
             'id_berkas' => $id_berkas,
+            'multiple_files'=>$request->multiple
         ]);
         Log::info('Berhasil menambahkan jenis file', [
             'user' => Auth::id(),
@@ -180,7 +189,19 @@ class JenisFileController extends Controller
     }
     public function status(Request $request, $id)
     {
-        JenisFile::where('id_jenis_file', $id)->update(['status' => $request->status]);
+
+        $jenisFile = JenisFile::where('id_jenis_file', $id)->first();
+        if($jenisFile->status == 0){
+            $jenisFile->update([
+              'status' => 1
+            ]);
+        }
+        elseif($jenisFile->status == 1){
+            $jenisFile->update([
+             'status' => 0
+            ]);
+        }
+       
         Log::info('Berhasil Memperbarui Status Jenis File', [
             'user' => Auth::id(),
             'status' => 'berhasil',

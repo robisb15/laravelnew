@@ -1,5 +1,5 @@
 <nav class="navbar navbar-expand bg-light navbar-light sticky-top px-4 py-0">
-                <a href="index.html" class="navbar-brand d-flex d-lg-none me-4">
+                <a href="{{ url('/') }}" class="navbar-brand d-flex d-lg-none me-4">
                     <h2 class="text-primary mb-0">Admin</h2>
                 </a>
                 <a href="#" class="sidebar-toggler flex-shrink-0">
@@ -7,7 +7,7 @@
                 </a>
                
                 <div class="navbar-nav align-items-center ms-auto">
-
+                    <a href="{{ route('inbox.index') }}" class="badge text-bg-primary"><i class="fa-solid fa-envelope fa-2x"></i></a>
                     <div class="nav-item dropdown">
                         <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
                             <img class="rounded-circle me-lg-2" src="{{ asset('SqvNR7QrAdmin') }}/img/user.png" alt=""

@@ -23,35 +23,48 @@ class PengajuanController extends Controller
 {
     public function index()
     {
-        $data['pendaftaran'] = DB::table('pendaftarans')
-            ->join('layanan', 'layanan.id_layanan', '=', 'pendaftarans.id_layanan')
-            ->join('status', 'status.id', '=', 'pendaftarans.status')
-            ->where('pendaftarans.status', '!=', '1')
-            ->select('pendaftarans.*', 'layanan.nama_layanan', 'status.nama as nama_status')
-            ->orderBy('pendaftarans.created_at', 'DESC')
-            ->get();
-        return view('admin.pengajuan.index', $data);
+
+        return view('admin.pengajuan.index');
     }
     public function data()
     {
-        $data = DB::table('pendaftarans')
-            ->join('layanan', 'layanan.id_layanan', '=', 'pendaftarans.id_layanan')
+        $data = Pendaftaran::
+            join('layanan', 'layanan.id_layanan', '=', 'pendaftarans.id_layanan')
             ->join('status', 'status.id', '=', 'pendaftarans.status')
+            ->leftJoin('profil as user_profile', 'user_profile.id_user', '=', 'pendaftarans.user_id')
+            ->leftJoin('profil as admin_profile', 'admin_profile.id_user', '=', 'pendaftarans.admin_id')
             ->where('pendaftarans.status', '!=', '1')
             ->orderBy('pendaftarans.created_at', 'DESC')
-            ->select('pendaftarans.*', 'layanan.nama_layanan', 'status.nama as nama_status')->orderBy('pendaftarans.created_at')->get();
-        return datatables()->
-            of($data)
+            ->select('pendaftarans.*', 'layanan.nama_layanan', 'status.id as id_status', 'user_profile.nama as nama_user','admin_profile.nama as nama_admin')
+            ->orderBy('pendaftarans.created_at')
+            ->get();
+
+        return datatables()
+            ->of($data)
             ->addIndexColumn()
             ->addColumn('aksi', function ($data) {
                 return '<a href="' . route('pengajuan.show', $data->id_pendaftaran) . '" class="btn btn-sm btn-warning">Detail</a>';
+            })
+            ->addColumn('nama_status', function ($data) {
+                if ($data->id_status == '1') {
+                    return '<span class="badge text-bg-secondary m-1">Draft</span>';
+                } elseif ($data->id_status == '2') {
+                    return '<span class="badge text-bg-primary m-1">Terkirim</span>';
+                } elseif ($data->id_status == '3') {
+                    return '<span class="badge text-bg-info m-1">Proses</span>';
+                } elseif ($data->id_status == '4') {
+                    return '<span class="badge text-bg-success m-1">Selesai</span>';
+                } elseif ($data->id_status == '5') {
+                    return '<span class="badge text-bg-danger m-1">Ditolak</span>';
+                }
             })
             ->addColumn('tanggal_pengajuan', function ($data) {
                 $tanggal = Carbon::parse($data->created_at)->format('d M Y   h:i');
                 return $tanggal;
             })
-            ->rawColumns(['aksi'])
+            ->rawColumns(['aksi', 'nama_status'])
             ->make(true);
+
     }
     public function show($id)
     {
@@ -59,7 +72,7 @@ class PengajuanController extends Controller
             ->join('status', 'status.id', '=', 'pendaftarans.status')
             ->join('layanan', 'layanan.id_layanan', '=', 'pendaftarans.id_layanan')
             ->leftJoin('berkas', 'berkas.id_berkas', '=', 'pendaftarans.id_berkas')
-            ->select('layanan.nama_layanan', 'status.nama', 'pendaftarans.keterangan', 'pendaftarans.id_pendaftaran', 'status.id as id_status', 'berkas.url', 'berkas.id_berkas', 'pendaftarans.kode_pendaftaran')
+            ->select('layanan.nama_layanan', 'status.nama', 'pendaftarans.keterangan', 'pendaftarans.id_pendaftaran', 'status.id as id_status', 'berkas.url', 'berkas.id_berkas', 'pendaftarans.kode_pendaftaran','pendaftarans.status','pendaftarans.id_layanan', 'berkas.nama_file')
             ->first();
         $data['isiFormulir'] = DB::table('isi_formulir')
             ->join('rincian_formulir', 'rincian_formulir.id_rincian_formulir', '=', 'isi_formulir.id_rincian_formulir')
@@ -68,14 +81,33 @@ class PengajuanController extends Controller
             ->select('isi_formulir.*', 'layanan.nama_layanan', 'rincian_formulir.nama as nama_formulir', 'rincian_formulir.tag as tag_formulir','rincian_formulir.jenis')
             ->orderBy('rincian_formulir.urut')
             ->get();
-        $data['berkasUpload'] = DB::table('berkas_upload')
-            ->join('syarat_berkas', 'syarat_berkas.id_syarat_berkas', '=', 'berkas_upload.id_syarat_berkas')
-            ->join('jenis_file', 'jenis_file.id_jenis_file', '=', 'berkas_upload.id_jenis_file')
-            ->leftjoin('berkas', 'berkas.id_berkas', '=', 'berkas_upload.id_berkas')
-            ->select('berkas.*', 'jenis_file.nama as nama_jenis_file', 'berkas_upload.keterangan', 'berkas_upload.id_berkas_upload', 'berkas_upload.id_berkas as berkas_id', 'berkas_upload.status as status_berkas')
-            ->where('berkas_upload.id_pendaftaran', $id)
-            ->orderBy('syarat_berkas.urut')
-            ->get();
+
+        if ($data['pendaftaran']->status == 3 || $data['pendaftaran']->status == 4) {
+            $data['berkasUpload'] = DB::table('berkas_upload')
+                ->join('berkas', 'berkas.id_berkas', '=', 'berkas_upload.id_berkas')
+                ->leftJoin('syarat_berkas', 'syarat_berkas.id_syarat_berkas', '=', 'berkas_upload.id_syarat_berkas')
+                ->join('jenis_file', 'jenis_file.id_jenis_file', '=', 'berkas_upload.id_jenis_file')
+                ->select('jenis_file.nama as nama_jenis_file', 'jenis_file.id_berkas as berkas_jenis_file', 'jenis_file.keterangan as jenis_jenis_file', 'berkas_upload.*', 'berkas.nama_file', 'berkas_upload.status as status_berkas', 'syarat_berkas.wajib as syarat_wajib')
+                ->where('berkas_upload.id_pendaftaran', $id)
+                ->whereNull('berkas_upload.deleted_at')
+                ->orderBy('syarat_berkas.urut')
+                ->get();
+
+        } else {
+            $data['berkasUpload'] = DB::table('syarat_berkas')
+                ->leftJoin('berkas_upload', 'berkas_upload.id_syarat_berkas', '=', 'syarat_berkas.id_syarat_berkas')
+                ->join('berkas', 'berkas.id_berkas', '=', 'berkas_upload.id_berkas')
+                ->join('jenis_file', 'jenis_file.id_jenis_file', '=', 'syarat_berkas.id_jenis_file')
+                ->select('jenis_file.nama as nama_jenis_file', 'jenis_file.id_berkas as berkas_jenis_file', 'jenis_file.keterangan as jenis_jenis_file', 'berkas_upload.*', 'berkas.nama_file', 'berkas_upload.status as status_berkas', 'syarat_berkas.wajib as syarat_wajib')
+                ->where('syarat_berkas.id_layanan', $data['pendaftaran']->id_layanan)
+                ->where('syarat_berkas.status', 1)
+                ->whereNull('syarat_berkas.deleted_at')
+                ->whereNull('berkas_upload.deleted_at')
+                ->where('berkas_upload.id_pendaftaran', $id)
+                ->orderBy('syarat_berkas.urut')
+                ->get();
+
+        }
         return view('admin.pengajuan.show', $data);
     }
     public function konfirmasi(Request $request)
@@ -86,6 +118,18 @@ class PengajuanController extends Controller
     public function konfirmasiBerkas(Request $request)
     {
         $berkas = BerkasUpload::where('id_berkas_upload', $request->id_berkas_upload)->first();
+        $pendaftaran = Pendaftaran::find($berkas->id_pendaftaran);
+    if(!$pendaftaran->admin_id){
+       $pendaftaran->update([
+            'admin_id'=>Auth::user()->id
+        ]);
+
+    }
+    elseif($pendaftaran->admin_id != Auth::user()->id ){
+            Alert::warning('Gagal', 'Pengajuan sedang diproses dengan admin lain');
+            return back();
+    }
+
         $berkas->update(['status' => $request->status, 'keterangan' => $request->keterangan]);
         Log::info('Konfirmasi Berkas Pengajuan', [
             'user' => Auth::id(),
@@ -114,8 +158,17 @@ class PengajuanController extends Controller
                 }
             }
         }
-        Pendaftaran::where('id_pendaftaran', $request->id_pendaftaran)
-            ->update([
+        $pendaftaran = Pendaftaran::find($request->id_pendaftaran);
+        if (!$pendaftaran->admin_id) {
+            $pendaftaran->update([
+                'admin_id' => Auth::user()->id
+            ]);
+
+        } elseif ($pendaftaran->admin_id != Auth::user()->id) {
+            Alert::warning('Gagal', 'Pengajuan sedang diproses dengan admin lain');
+            return back();
+        }
+        $pendaftaran->update([
                 'status' => $request->status,
                 'keterangan' => $request->keterangan,
             ]);
@@ -130,12 +183,22 @@ class PengajuanController extends Controller
     }
     public function update(Request $request, $id)
     {
+        $pendaftaran = Pendaftaran::find($id);
+        if (!$pendaftaran->admin_id) {
+            $pendaftaran->update([
+                'admin_id' => Auth::user()->id
+            ]);
+
+        } elseif ($pendaftaran->admin_id != Auth::user()->id) {
+            Alert::warning('Gagal', 'Pengajuan sedang diproses dengan admin lain');
+            return back();
+        }
         if (!isset($request->file)) {
             Log::warning('Gagal memperbarui status pengajuan', [
                 'user' => Auth::id(),
                 'status' => 'Gagal',
                 'pendaftaran' => $id,
-                'message' => 'User gagal memperbarui pengajuan,Semua berkas belum diterima',
+                'message' => 'User gagal memperbarui pengajuan,Berkas belum ditambahkan',
             ]);
             Alert::error('Gagal', 'File harus diupload');
             return back();

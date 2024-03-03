@@ -1,17 +1,18 @@
 @extends('layouts.admin.app')
 @section('content')
-    <div class="container-fluid p-5">
+   <div class="container-fluid p-5">
         <div class="card bg-light">
             <div class="card-body">
                 <div class="">
-                    <h3>{{ $title }}</h3>
+                    <h3>Data {{ $title }}</h3>
                     
-                    <a href={{ $create }} class="btn btn-primary mt-3">Tambah</a>
+                    <a href={{ $create }} class="btn btn-success btn-sm mt-3"><i class="fa-solid fa-plus"></i> Tambah</a>
                     <div class="bg-white table-responsive m-3 p-3">
                         <table class="table table-responsive table-bordered table-hover">
                             <thead>
                                 <th>No</th>
                                 <th>Username</th>
+                                <th>NIK</th>
                                 <th>Email</th>
                                 <th>Aksi</th>
                             </thead>
@@ -42,6 +43,9 @@
                     },
                     {
                         data: 'name'
+                    },
+                    {
+                        data:'nik'
                     },
                     {
                         data: 'email'

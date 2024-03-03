@@ -19,11 +19,12 @@ class AdminController extends Controller
 {
     public function dashboard()
     {
-        $data['totalTotal'] = Pendaftaran::where('status', '!=','1')->count();
+        $data['totalTotal'] = Pendaftaran::where('status', '!=', '1')->count();
+        $data['totalBelumProses'] = Pendaftaran::where('status', 2)->count();
         $data['totalProses'] = Pendaftaran::where('status', 3)->count();
         $data['totalSelesai'] = Pendaftaran::where('status', 4)->count();
         $data['totalTolak'] = Pendaftaran::where('status', 5)->count();
-        return view('admin.dashboard',$data);
+        return view('admin.dashboard', $data);
     }
     public function index()
     {
@@ -39,19 +40,10 @@ class AdminController extends Controller
             ->addIndexColumn()
             ->addColumn('aksi', function ($user) {
                 return '
-            <div class="dropdown">
-                <button class="btn btn-warning dropdown-toggle" type="button"
-                    data-bs-toggle="dropdown" aria-expanded="false">
-                    Aksi
-                </button>
-                <ul class="dropdown-menu">
-                
-                    <li><a href="' . route('admin.show', $user->id) . '" class="dropdown-item">Lihat</a></li>
-                    <li><a href="' . route('admin.edit', $user->id) . '" class="dropdown-item">Edit</a></li>
-                    <li> <a href="javascript:;" onclick="addForm(`' . route('admin.destroy', $user->id) . '`)" class="dropdown-item">
-                   Hapus </a></li>
-
-                </ul>
+            <div class="">
+            <a href="' . route('admin.show', $user->id) . '"  class="btn btn-secondary btn-sm"> <i class="fa-regular fa-eye"></i></a>
+                    <a href="' . route('admin.edit', $user->id) . '"  class="btn btn-warning btn-sm"> <i class="fa-solid fa-pen"></i></a>
+                    <a href="javascript:;" onclick="addForm(`' . route('admin.destroy', $user->id) . '`)" class="btn btn-danger btn-sm"> <i class="fa-solid fa-trash"></i></a>
             </div>
             ';
             })
@@ -72,7 +64,7 @@ class AdminController extends Controller
             'password' => ['required', 'min:8', 'confirmed', Rules\Password::defaults()],
             'nama' => ['required', 'string', 'max:255'],
             'alamat' => ['required', 'string', 'max:255'],
-            'nip' => ['required', 'string', 'min:18', 'max:18'],
+            'nik' => ['required', 'string', 'max:16', 'unique:' . User::class],
             'telepon' => ['required', 'string', 'max:14']
 
 
@@ -90,17 +82,21 @@ class AdminController extends Controller
             'nama.max' => 'Nama maksimal 255 karakter',
             'alamat.required' => 'Alamat harus diisi',
             'alamat.max' => 'Alamat maksimal 255 karakter',
-            'nip.required' => 'NIP harus diisi',
-            'nip.min' => 'NIP minimal 18 karakter',
-            'nip.max' => 'NIP maksimal 18 karakter',
+            'nik.required' => 'NIK harus diisi',
+            'nik.min' => 'NIK minimal 16 karakter',
+            'nik.max' => 'NIK maksimal 16 karakter',
             'telepon.required' => 'Telepon harus diisi',
             'telepon.max' => 'Telepon maksimal 14 karakter',
+            'nik.unique' => 'nik sudah digunakan',
+            'name.unique' => 'nik sudah digunakan'
+
         ]);
         $user = User::create([
             'id' => Str::uuid(4),
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'nik' => $request->nik,
             'role' => 'admin'
         ]);
         Profil::create([
@@ -109,7 +105,6 @@ class AdminController extends Controller
             'nama' => $request->name,
             'alamat' => $request->alamat,
             'telepon' => $request->telepon,
-            'nip' => $request->nip,
         ]);
         Log::info('Berhasil Menambahkan User', [
             'user' => Auth::id(),
@@ -123,19 +118,23 @@ class AdminController extends Controller
     public function show($id)
     {
         $data['title'] = 'Admin';
-        $data['user'] = DB::table('users')
-            ->join('profil', 'profil.id_user', 'users.id')
+        $data['user'] = User::
+            leftJoin('profil', 'profil.id_user', 'users.id')
             ->where('users.id', $id)
             ->select('users.*', 'profil.*')
             ->first();
+        if (!$data['user']) {
+            Alert::warning('Data Tidak Ditemukan');
+            return redirect()->route('admin.index');
+        }
         return view('admin.user.show', $data);
     }
     public function edit($id)
     {
         $data['title'] = 'Edit Admin';
         $data['route'] = route('admin.update', $id);
-        $data['user'] = DB::table('users')
-            ->join('profil', 'profil.id_user', 'users.id')
+        $data['user'] = User::
+            leftjoin('profil', 'profil.id_user', 'users.id')
             ->where('users.id', $id)
             ->select('users.*', 'profil.*')
             ->first();
@@ -144,12 +143,12 @@ class AdminController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'name' => ['required', 'string', 'max:255'],
+            'name' => 'required|string|max:255|unique:users,name,' . $id,
             'email' => 'required|email|max:255|unique:users,email,' . $id,
             'password' => ['required', 'min:8', 'confirmed', Rules\Password::defaults()],
             'nama' => ['required', 'string', 'max:255'],
             'alamat' => ['required', 'string', 'max:255'],
-            'nip' => ['required', 'string', 'min:18', 'max:18'],
+            'nik' => 'required|string|min:14|max:16|unique:users,nik,' . $id,
             'telepon' => ['required', 'string', 'max:14']
         ], [
             'name.required' => 'Username harus diisi',
@@ -165,27 +164,43 @@ class AdminController extends Controller
             'nama.max' => 'Nama maksimal 255 karakter',
             'alamat.required' => 'Alamat harus diisi',
             'alamat.max' => 'Alamat maksimal 255 karakter',
-            'nip.required' => 'NIP harus diisi',
-            'nip.min' => 'NIP minimal 18 karakter',
-            'nip.max' => 'NIP maksimal 18 karakter',
+            'nik.required' => 'NIK harus diisi',
+            'nik.min' => 'NIK minimal 14 karakter',
+            'nik.max' => 'NIK maksimal 16 karakter',
             'telepon.required' => 'Telepon harus diisi',
             'telepon.max' => 'Telepon maksimal 14 karakter',
+            'name.unique' => 'Username sudah digunakan',
+            'nik.unique' => 'NIK sudah digunakan',
         ]);
+
         $user = User::find($id)->update([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'nik' => $request->nik
         ]);
-        Profil::where('id_user', $id)->update([
-            'nama' => $request->nama,
-            'alamat' => $request->alamat,
-            'telepon' => $request->telepon,
-            'nip' => $request->nip,
-        ]);
+        $profil = Profil::where('id_user', $id)->first();
+        if ($profil) {
+
+            $profil->update([
+                'nama' => $request->nama,
+                'alamat' => $request->alamat,
+                'telepon' => $request->telepon,
+
+            ]);
+        } else {
+            Profil::create([
+                'id_profil' => Str::uuid(4),
+                'nama' => $request->nama,
+                'alamat' => $request->alamat,
+                'telepon' => $request->telepon,
+                'id_user' => $id
+            ]);
+        }
         Log::info('Berhasil Memperbarui Admin', [
             'user' => Auth::id(),
             'status' => 'Berhasil',
-            'admin' => $user->id,
+            'admin' => $id,
             'message' => 'User berhasil memperbarui data admin',
         ]);
         Alert::success('Berhasil', 'Data telah diperbarui');
@@ -193,6 +208,18 @@ class AdminController extends Controller
     }
     public function destroy($id)
     {
+        $pengajuan = Pendaftaran::where('admin_id', $id)->where('status', '<>', 4)->get();
+
+        if ($pengajuan->isNotEmpty()) {
+            Log::warning('Gagal menghapus Admin', [
+                'user' => Auth::id(),
+                'status' => 'Gagal',
+                'admin' => $id,
+                'message' => 'User gagal menghapus data admin',
+            ]);
+            Alert::error('Gagal', 'Admin sedang memproses pengajuan');
+            return redirect()->route('admin.index');
+        }
         if (count(User::where('role', 'admin')->get()) <= 1) {
             Log::warning('Gagal menghapus Admin', [
                 'user' => Auth::id(),

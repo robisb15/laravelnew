@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Models\User;
+use App\Http\Controllers\Admin\LayananController;
 
 
 /*
@@ -19,8 +20,5 @@ use App\Models\User;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
-// Route::get('/user', function (Request $request){
-//    $user = User::get();
-//    return response()->json($user);
-// });
+
 

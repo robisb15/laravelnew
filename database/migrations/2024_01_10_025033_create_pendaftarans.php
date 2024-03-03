@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('id_berkas')->nullable();
             $table->string('keterangan')->nullable();
             $table->string('user_id');
+            $table->string('admin_id')->nullable();
             $table->timestamps();
              $table->softDeletes();
         });

@@ -42,8 +42,8 @@
                         
                         <label for="" class="mt-2">Wajib</label>
                         <select name="wajib" id="status" class="form-control" required>
-                            <option value="1">Aktif</option>
-                            <option value="0">Tidak Aktif</option>
+                            <option value="1">Ya</option>
+                            <option value="0">Tidak</option>
                         </select>
                         <br>
                         <button type="submit" class="btn btn-sm btn-primary">Simpan</button>

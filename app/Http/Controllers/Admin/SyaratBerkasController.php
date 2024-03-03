@@ -46,6 +46,7 @@ class SyaratBerkasController extends Controller
                 'jenis_file.keterangan',
                 'berkas.url',
                 'berkas.id_berkas',
+                'berkas.nama_file',
                 'syarat_berkas.id_syarat_berkas',
             )
             ->orderBy('syarat_berkas.urut', 'asc')
@@ -54,12 +55,19 @@ class SyaratBerkasController extends Controller
             of($data)
             ->addIndexColumn()
             ->addColumn('aksi', function ($data) {
+               
+                return '
+            <div class="">
+        
+                    <a href="javascript:;" onclick="editForm(\'' . route('syarat-berkas.update', [$data->id_syarat_berkas]) . '\', \'' . $data->id_jenis_file . '\')" class="btn btn-warning btn-sm m-1"> <i class="fa-solid fa-pen"></i></a>
+                    <a href="javascript:;" onclick="deleteForm(\'' . route('syarat-berkas.destroy', [$data->id_syarat_berkas]) . '\')" class="btn btn-danger btn-sm m-1"> <i class="fa-solid fa-trash"></i></a>
+            </div>
+            ';
+            })
+            ->addColumn('status_layanan', function ($data) {
                 return [
                     'id_syarat_berkas' => $data->id_syarat_berkas,
-                    'status' => $data->status,
-                    'delete' => '<a href="javascript:;" onclick="deleteForm(\'' . route('syarat-berkas.destroy', [$data->id_syarat_berkas]) . '\')" class="dropdown-item">Hapus</a>',
-                    'edit' => '<a href="javascript:;" onclick="editForm(\'' . route('syarat-berkas.update', [$data->id_syarat_berkas]) . '\', \'' . $data->id_jenis_file . '\')" class="dropdown-item">Edit</a>',
-
+                    'status' => $data->status
                 ];
             })
             ->addColumn('update_urut', function ($update_urut) {
@@ -71,11 +79,12 @@ class SyaratBerkasController extends Controller
             })
             ->addColumn('file', function ($data) {
                 if ($data->url) {
-                    return '<a href="javascript:;" onclick="lihatFile(\'' . $data->id_berkas . '\')" class="btn btn-sm btn-primary">Lihat</a>';
+                    return '<a href="javascript:;" onclick="lihatFile(\'' . $data->id_berkas . '\', \'' . $data->nama_file . '\')" class="btn btn-sm btn-primary">Lihat</a>';
                 } else {
                     return '-';
                 }
             })
+
             ->rawColumns(['aksi', 'update_urut', 'nama_status', 'status_wajib', 'file'])
             ->make(true);
     }
@@ -94,6 +103,11 @@ class SyaratBerkasController extends Controller
             'urut.min' => 'Nomor Urut minimal 1',
             'urut.numeric' => 'Nomor Urut harus berupa angka',
         ]);
+        $oldSyarat = SyaratBerkas::where('id_layanan', $request->id_layanan)->where('id_jenis_file',$request->id_jenis_file)->first();
+        if($oldSyarat){
+            Alert::error('Gagal', 'Berkas sudah ada');
+            return redirect()->route('syarat-berkas.layanan', [$request->id_layanan]);
+        }
         $oldsyaratBerkas = SyaratBerkas::where('urut', $request->urut)->where('id_layanan', $request->id_layanan)->first();
         if ($oldsyaratBerkas) {
             $syaratBerkas = SyaratBerkas::where('id_layanan', $request->id_layanan)->get();
@@ -113,13 +127,13 @@ class SyaratBerkasController extends Controller
             'syarat_berkas' => $syarat->id_syarat_berkas,
             'message' => 'User berhasil menambahkan data syarat berkas',
         ]);
-        Alert::success('Berhasi', 'Data ditambahkan');
+        Alert::success('Berhasil', 'Data ditambahkan');
         return redirect()->route('syarat-berkas.layanan', [$request->id_layanan]);
 
     }
     public function layanan($id)
     {
-        $data['jenisFile'] = JenisFile::whereNull('deleted_at')->where('status', 1)->get();
+        $data['jenisFile'] = JenisFile::whereNull('deleted_at')->where('status', 1)->orderBy('nama')->get();
         $data['layanan'] = Layanan::where('id_layanan', $id)->first();
 
         return view('admin.syaratBerkas.layanan', $data);
@@ -154,7 +168,12 @@ class SyaratBerkasController extends Controller
     }
     public function status(Request $request, $id)
     {
-        SyaratBerkas::where('id_syarat_berkas', $id)->update(['status' => $request->status]);
+        $syaratBerkas = SyaratBerkas::where('id_syarat_berkas', $id)->first();
+        if ($syaratBerkas->status == 1) {
+            $syaratBerkas->update(['status' => 0]);
+        } elseif ($syaratBerkas->status == 0) {
+            $syaratBerkas->update(['status' => 1]);
+        }
         Log::info('Berhasil memperbarui status syarat berkas', [
             'user' => Auth::id(),
             'status' => 'Berhasil',
@@ -167,12 +186,13 @@ class SyaratBerkasController extends Controller
     public function tambah($id)
     {
         $data['layanan'] = Layanan::where('id_layanan', $id)->first();
-        $data['jenisFile'] = JenisFile::get();
+        $data['jenisFile'] = JenisFile::orderBy('nama')->get();
         return view('admin.syaratBerkas.create', $data);
     }
     public function update(Request $request, $id)
     {
-        if (!$request->id_jenis_file || !$request->wajib) {
+        // dd($request);
+        if (!isset($request->id_jenis_file) || !isset($request->wajib)) {
             Log::warning('Gagal memperbarui syarat berkas', [
                 'user' => Auth::id(),
                 'status' => 'Gagal',
@@ -181,6 +201,12 @@ class SyaratBerkasController extends Controller
             ]);
             Alert::warning('Gagal', 'Syarat Berkas Tidak Boleh Kosong');
             return back();
+        }
+        $syaratBerkas = SyaratBerkas::find($id);
+        $oldSyarat = SyaratBerkas::where('id_layanan', $syaratBerkas->id_layanan)->where('id_jenis_file', $request->id_jenis_file)->first();
+        if ($oldSyarat) {
+            Alert::error('Gagal', 'Berkas sudah ada');
+            return redirect()->route('syarat-berkas.layanan', [$syaratBerkas->id_layanan]);
         }
         SyaratBerkas::where('id_syarat_berkas', $id)->update([
             'id_jenis_file' => $request->id_jenis_file,

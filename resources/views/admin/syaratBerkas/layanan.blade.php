@@ -11,9 +11,9 @@
                     </div>
 
                     <br>
-                    <a href={{ route('syarat-berkas.tambah',[$layanan->id_layanan]) }} class="btn btn-primary">Tambah</a>
+                    <a href={{ route('syarat-berkas.tambah', [$layanan->id_layanan]) }} class="btn btn-primary">Tambah</a>
 
-                   <div class="bg-white table-responsive m-3 p-3">
+                    <div class="bg-white table-responsive m-3 p-3">
                         <table class="table table-responsive table-bordered table-hover">
                             <thead>
                                 <th>No</th>
@@ -22,10 +22,10 @@
                                 <th>Status</th>
                                 <th>Wajib</th>
                                 <th>File</th>
-                                <th>Urut</th>
+                                <th width="15%">Urut</th>
                                 <th>Aksi</th>
                             </thead>
-                
+
                         </table>
                     </div>
                 </div>
@@ -57,7 +57,7 @@
                 serverSide: true,
                 autoWidth: false,
                 ajax: {
-                    url: '{{ route('syarat-berkas.data',"")}}' + '/' + id,
+                    url: '{{ route('syarat-berkas.data', '') }}' + '/' + id,
                 },
                 columns: [{
                         data: 'DT_RowIndex'
@@ -66,18 +66,28 @@
                         data: 'nama',
                     },
                     {
-                        data:'keterangan',
-                        name:'keterangan',
+                        data: 'keterangan',
+                        name: 'keterangan',
                     },
                     {
-                        data: 'status',
-                        name: 'status',
+                        data: 'status_layanan',
+                        name: 'status_layanan',
                         render: function(data, type, full, meta) {
-                            if (data == 1) {
-                                return 'Aktif';
+                            if (data.status == 1) {
+                                status_layanan =
+                                    '<span class="badge text-bg-success m-1">Aktif</span>';
                             } else {
-                                return 'NonAktif';
+                                status_layanan =
+                                    '<span class="badge text-bg-danger m-1">NonAktif</span>';
                             }
+                            return '<div>' + status_layanan +
+                                '<form action="{{ route('syarat-berkas.status', '') }}/' +
+                                data.id_syarat_berkas + '" method="post">' +
+                                '@csrf' +
+                                '@method('PUT')' +
+                                '<button type="submit" class="btn btn-primary btn-sm"><i class="fa-solid fa-arrows-rotate"></i></button>' +
+                                '</form>' +
+                                '</div>'
                         }
 
                     },
@@ -86,15 +96,15 @@
                         name: 'wajib',
                         render: function(data, type, full, meta) {
                             if (data == 1) {
-                                return 'Ya';
+                                return '<span class="badge text-bg-success m-1">Ya</span>';
                             } else {
-                                return 'Tidak';
+                                return '<span class="badge text-bg-danger m-1">Tidak</span>';
                             }
                         }
 
                     },
                     {
-                        data:'file'
+                        data: 'file'
                     },
                     {
                         data: 'update_urut',
@@ -107,14 +117,14 @@
                                 '{{ method_field('PUT') }}' +
 
                                 '<div class="row">' +
-                                     '<div class="col-md-7">' +
+                                '<div class="col-md-7">' +
                                 '<input type="number" min="1" value="' + data['urut'] +
                                 '" class="form-control" name="urut" >' +
                                 '</div>' +
-                                         '<div class="col-md-5">' +
+                                '<div class="col-md-5">' +
                                 '<button type="submit" class="btn btn-sm btn-primary p-2 mt-1">' +
                                 '<i class="fa fa-check"></i></button>' +
-                                    '</div>' +
+                                '</div>' +
                                 '</div>' +
                                 '</form>';
                         },
@@ -122,43 +132,6 @@
                     {
                         data: 'aksi',
                         name: 'aksi',
-                        render: function(data, type, full, meta) {
-                            var status = '';
-
-                            if (data.status == 1) {
-                                status = '<li>' +
-                                    '<form action="{{ route('syarat-berkas.status', '') }}/' +
-                                    data.id_syarat_berkas + '" method="post">' +
-                                    '@csrf' +
-                                    '@method('PUT')' +
-                                    '<input type="hidden" name="status" value="0">' +
-                                    '<button type="submit" class="dropdown-item">NonAktif</button>' +
-                                    '</form>' +
-                                    '</li>';
-                            } else {
-                                status = '<li>' +
-                                    '<form action="{{ url('admin/syarat-berkas/status/') }}/' +
-                                    data.id_syarat_berkas + '" method="post">' +
-                                    '@csrf' +
-                                    '@method('PUT')' +
-                                    '<input type="hidden" name="status" value="1">' +
-                                    '<button type="submit" class="dropdown-item">Aktif</button>' +
-                                    '</form>' +
-                                    '</li>';
-                            }
-
-                            return '<div class="dropdown">' +
-                                '<button class="btn btn-warning dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">' +
-                                'Aksi' +
-                                '</button>' +
-                                '<ul class="dropdown-menu">' +
-                                '<li>' + unescapeHTML(data.edit) + '</li>' +
-                                '<li>' + unescapeHTML(data.delete) + '</li>' +
-                                '<li>' + unescapeHTML(status) + '</li>' +
-                                '</ul>' +
-                                '</div>' +
-                                '</li>';
-                        }
 
                     },
                 ],
@@ -178,7 +151,7 @@
 
         function editForm(url, id) {
             $('#modal-form-edit').modal('show');
-            $('#modal-form-edit .modal-title').text('Edit layanan');
+            $('#modal-form-edit .modal-title').text('Edit Syarat Berkas');
 
             // Fix the function name from JSON_parse to JSON.parse
 
@@ -189,14 +162,18 @@
             // Use .val() to set the value of the input field
             $('#modal-form-edit [name=id_jenis_file]').attr('value', id);
         }
-        function lihatFile(id) {
+
+        function lihatFile(id, nama) {
+            var namaFile = nama.replace('.pdf', '');
+            var storageUrl = '{{ url('/files/view/') }}/' + id + '/' + namaFile;
             $('#modal-file').modal('show');
             $('#modal-file .modal-title').text('Preview File');
-            // Mendefinisikan URL untuk mendapatkan response dari Storage
-            var storageUrl = '{{ route("storage.view", "") }}/' + id;
             // Mengatur sumber iframe dengan URL dari Storage
             $('#pdf').attr('src', storageUrl);
         }
+
+
+
 
         function unescapeHTML(escapedHTML) {
             return escapedHTML.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&').replace(/&quot;/g, '"')

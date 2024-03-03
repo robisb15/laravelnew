@@ -19,6 +19,7 @@ class JenisFile extends Model
         'keterangan',
         'status',
         'id_berkas',
+        'multiple_files'
     
     ];
     public $incrementing = false;

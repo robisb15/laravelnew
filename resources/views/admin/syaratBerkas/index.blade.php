@@ -4,6 +4,9 @@
     <div class="container">
         <h3 class="py-3">Syarat Berkas</h3>
         <div class="row">
+             @if(count($syaratBerkas) == 0)
+            <h1>Tidak ada layanan</h1>
+            @endif
             @foreach ($syaratBerkas as $item)
                 <div class="col-md-4 bg-info rounded p-4 m-2">
                     <a href="{{ route('syarat-berkas.layanan', [$item->id_layanan]) }}">

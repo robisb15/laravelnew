@@ -3,6 +3,9 @@
     <div class="container">
         <h3 class="py-3">Formulir</h3>
         <div class="row ">
+            @if(count($rincianFormulir) == 0)
+            <h1>Tidak ada layanan</h1>
+            @endif
             @foreach ($rincianFormulir as $item)
                 <div class="col-md-4 col-lg-4 bg-info rounded p-4 m-2 ">
 

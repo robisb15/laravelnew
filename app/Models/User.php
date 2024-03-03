@@ -24,6 +24,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'nik',
         'role'
     ];
 
@@ -51,4 +52,8 @@ class User extends Authenticatable
     // In Laravel 6.0+ make sure to also set $keyType
     protected $keyType = 'string';
     protected $primaryKey = 'id';
+    public function messages()
+    {
+        return $this->hasMany(Message::class,'user_id','id');
+    }
 }

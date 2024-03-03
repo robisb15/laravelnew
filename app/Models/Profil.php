@@ -15,7 +15,6 @@ class Profil extends Model
     protected $fillable = [
         'id_profil',
         'id_user',
-        'nip',
         'nama',
         'alamat',
         'telepon',
@@ -28,5 +27,5 @@ class Profil extends Model
 
     // In Laravel 6.0+ make sure to also set $keyType
     protected $keyType = 'string';
-    protected $primaryKey = 'id_rincian_formulir';
+    protected $primaryKey = 'id_profil';
 }

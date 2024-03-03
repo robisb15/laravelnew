@@ -16,6 +16,7 @@ class PdesaController extends Controller
         $data['layanan'] = Layanan::where('status', 1)->orderBy('urut')->get();
         $data['totalTotal'] = Pendaftaran::where('status', '!=', '1')->count();
         $data['totalProses'] = Pendaftaran::where('status', 3)->count();
+        $data['totalBelumProses'] = Pendaftaran::where('status', 2)->count();
         $data['totalSelesai'] = Pendaftaran::where('status', 4)->count();
         $data['totalTolak'] = Pendaftaran::where('status', 5)->count();
         return view('p-desa.dashboard', $data);

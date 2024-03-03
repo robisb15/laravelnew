@@ -235,7 +235,7 @@
 }
 
 .page-header {
-    background: linear-gradient(rgba(0, 0, 0, .4), rgba(0, 0, 0, .4)), url(../img/tebo1.webp) center center no-repeat;
+    background: linear-gradient(rgba(0, 0, 0, .4), rgba(0, 0, 0, .4)), url(../img/tebo.png) center center no-repeat;
     background-size: cover;
 }
 
@@ -246,7 +246,7 @@
 
 /*** Facts ***/
 .fact {
-    background: linear-gradient(rgba(0, 0, 0, .4), rgba(0, 0, 0, .4)), url(../img/tebo1.webp) center center no-repeat;
+    background: linear-gradient(rgba(0, 0, 0, .4), rgba(0, 0, 0, .4)), url(../img/tebo.png) center center no-repeat;
     background-size: cover;
 }
 

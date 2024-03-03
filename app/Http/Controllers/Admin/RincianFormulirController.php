@@ -39,6 +39,12 @@ class RincianFormulirController extends Controller
         return datatables()->
             of($data)
             ->addIndexColumn()
+            ->addColumn('status_layanan', function ($data) {
+                return [
+                    'id_rincian_formulir' => $data->id_rincian_formulir,
+                    'status' => $data->status
+                ];
+            })
             ->addColumn('isi_form', function ($data) {
                 return array(
                     'jenis' => $data->jenis,
@@ -46,13 +52,11 @@ class RincianFormulirController extends Controller
                 );
             })
             ->addColumn('aksi', function ($data) {
-                return [
-                    'id_rincian_formulir' => $data->id_rincian_formulir,
-                    'status' => $data->status,
-                    'delete' => '<a href="javascript:;" onclick="deleteForm(\'' . route('rincian-formulir.destroy', [$data->id_rincian_formulir]) . '\')" class="dropdown-item">Hapus</a>',
-                    'edit' => '<a href="javascript:;" onclick="editForm(\'' . route('rincian-formulir.update', [$data->id_rincian_formulir]) . '\', \'' . $data->nama . '\',\' ' . $data->jenis . '\',\' ' . $data->tag . '\')" class="dropdown-item">Edit</a>',
-
-                ];
+                return
+                    ' <div class="">
+                   <a href="javascript:;" onclick="editForm(\'' . route('rincian-formulir.update', [$data->id_rincian_formulir]) . '\', \'' . $data->nama . '\',\' ' . $data->jenis . '\',\' ' . $data->tag . '\')"  class="btn btn-warning btn-sm"> <i class="fa-solid fa-pen"></i></a>
+                   <a href="javascript:;" onclick="deleteForm(\'' . route('rincian-formulir.destroy', [$data->id_rincian_formulir]) . '\')"  class="btn btn-danger btn-sm"> <i class="fa-solid fa-trash"></i></a>
+            </div>';
             })
             ->addColumn('update_urut', function ($update_urut) {
                 return array(
@@ -102,7 +106,7 @@ class RincianFormulirController extends Controller
                 $rincianFormulir = RincianFormulir::where('id_layanan', $request->id_layanan)->get();
                 $oldrincianFormulir->update(['urut' => count($rincianFormulir) + 1]);
             }
-            $formulirForm=RincianFormulir::create([
+            $formulirForm = RincianFormulir::create([
                 'id_rincian_formulir' => Str::uuid(4),
                 'id_layanan' => $request->id_layanan,
                 'nama' => $request->nama,
@@ -128,7 +132,7 @@ class RincianFormulirController extends Controller
             $rincianFormulir = RincianFormulir::where('id_layanan', $request->id_layanan)->get();
             $oldrincianFormulir->update(['urut' => count($rincianFormulir) + 1]);
         }
-        $form =RincianFormulir::create([
+        $form = RincianFormulir::create([
             'id_rincian_formulir' => Str::uuid(4),
             'id_layanan' => $request->id_layanan,
             'nama' => $request->nama,
@@ -183,7 +187,12 @@ class RincianFormulirController extends Controller
     }
     public function status(Request $request, $id)
     {
-        RincianFormulir::where('id_rincian_formulir', $id)->update(['status' => $request->status]);
+        $form = RincianFormulir::where('id_rincian_formulir', $id)->first();
+        if ($form->status == 1) {
+            $form->update(['status' => 0]);
+        } elseif ($form->status == 0) {
+            $form->update(['status' => 1]);
+        }
         Log::info('Berhasil memperbarui status formulir', [
             'user' => Auth::id(),
             'status' => 'Berhasil',

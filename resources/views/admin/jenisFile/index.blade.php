@@ -5,9 +5,10 @@
             <div class="card-body">
                 <div class="">
                     <h3>Jenis File</h3>
-        
 
-                    <a href={{ url('/admin/jenis-file/create') }} class="btn btn-primary mt-3">Tambah</a>
+
+                    <a href={{ url('/admin/jenis-file/create') }} class="btn btn-success btn-sm mt-3"><i
+                            class="fa-solid fa-plus"></i> Tambah</a>
                     <div class="bg-white table-responsive m-3 p-3">
                         <table class="table table-responsive table-bordered table-hover">
                             <thead>
@@ -16,7 +17,8 @@
                                 <th>Keterangan</th>
                                 <th>Status</th>
                                 <th>File</th>
-                                <th>Aksi</th>
+                                <th>Banyak File</th>
+                                <th width="15%">Aksi</th>
                             </thead>
                         </table>
                     </div>
@@ -59,66 +61,48 @@
 
                     },
                     {
-                        data:'keterangan',
+                        data: 'keterangan',
                     },
                     {
-                        data: 'status',
+                        data: 'status_layanan',
+                        name: 'status_layanan',
+                        render: function(data, type, full, meta) {
+                             if (data.status == 1) {
+                                status_layanan = '<span class="badge text-bg-success m-1">Aktif</span>';
+                            } else {
+                                status_layanan =  '<span class="badge text-bg-danger m-1">NonAktif</span>';
+                            }
+                            return '<div>' + status_layanan +
+                                '<form action="{{ route('jenis-file.status', '') }}/' +
+                                data.id_jenis_file + '" method="post">' +
+                                '@csrf' +
+                                '@method('PUT')' +
+                                '<button type="submit" class="btn btn-primary btn-sm"><i class="fa-solid fa-arrows-rotate"></i></button>' +
+                                '</form>' +
+                                '</div>'
+                        }
+
+                    },
+                    {
+                        data: 'file',
+                        name: 'file'
+                    },
+                    {
+                        data: 'multiple_files',
                         name: 'status',
                         render: function(data, type, full, meta) {
                             if (data == 1) {
-                                return 'Aktif';
+                                return  '<span class="badge text-bg-success m-1">Ya</span>';
                             } else {
-                                return 'NonAktif';
+                                return  '<span class="badge text-bg-danger m-1">Tidak</span>';
                             }
                         }
 
                     },
-                    {
-                        data:'file',
-                        name:'file'
-                    },
-                   
+
                     {
                         data: 'aksi',
                         name: 'aksi',
-                        render: function(data, type, full, meta) {
-                            var status = '';
-
-                            if (data.status == 1) {
-                                status = '<li>' +
-                                    '<form action="{{ route('jenis-file.status', '') }}/' +
-                                    data.id_jenis_file + '" method="post">' +
-                                    '@csrf' +
-                                    '@method('PUT')' +
-                                    '<input type="hidden" name="status" value="0">' +
-                                    '<button type="submit" class="dropdown-item">NonAktif</button>' +
-                                    '</form>' +
-                                    '</li>';
-                            } else {
-                                status = '<li>' +
-                                    '<form action="{{ url('admin/jenis-file/status/') }}/' +
-                                    data.id_jenis_file + '" method="post">' +
-                                    '@csrf' +
-                                    '@method('PUT')' +
-                                    '<input type="hidden" name="status" value="1">' +
-                                    '<button type="submit" class="dropdown-item">Aktif</button>' +
-                                    '</form>' +
-                                    '</li>';
-                            }
-
-                            return '<div class="dropdown">' +
-                                '<button class="btn btn-warning dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">' +
-                                'Aksi' +
-                                '</button>' +
-                                '<ul class="dropdown-menu">' +
-                                '<li>' + unescapeHTML(data.edit) + '</li>' +
-                                '<li>' + unescapeHTML(data.delete) + '</li>' +
-                                '<li>' + unescapeHTML(status) + '</li>' +
-                                '</ul>' +
-                                '</div>' +
-                                '</li>';
-                        }
-
                     },
                 ],
                 columnDefs: [{
@@ -137,27 +121,29 @@
 
         function editForm(url, nama, keterangan) {
             $('#modal-form-edit').modal('show');
-            $('#modal-form-edit .modal-title').text('Edit layanan');
+            $('#modal-form-edit .modal-title').text('Edit Jenis File');
 
             // Fix the function name from JSON_parse to JSON.parse
 
             $('#modal-form-edit form')[0].reset();
             $('#modal-form-edit form').attr('action', url);
             $('#modal-form-edit [name=_method]').val('put');
-             $('#modal-form-edit [name=nama]').attr('value', nama);
-              $('#modal-form-edit [name=keterangan]').attr('value', );
+            $('#modal-form-edit [name=nama]').attr('value', nama);
+            $('#modal-form-edit [name=keterangan]').attr('value', keterangan);
 
         }
+
         function lihatFile(id) {
             $('#modal-file').modal('show');
             $('#modal-file .modal-title').text('Preview File');
 
             // Mendefinisikan URL untuk mendapatkan response dari Storage
-            var storageUrl = '{{ route("storage.view", "") }}/' + id;
+            var storageUrl = '{{ route('storage.view', '') }}/' + id;
 
             // Mengatur sumber iframe dengan URL dari Storage
             $('#pdf').attr('src', storageUrl);
         }
+
         function unescapeHTML(escapedHTML) {
             return escapedHTML.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&').replace(/&quot;/g, '"')
                 .replace(/&quot;/g, '"');

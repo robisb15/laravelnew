@@ -15,6 +15,7 @@ return new class extends Migration
             $table->string('id_layanan')->primary();
             $table->string('nama_layanan');
             $table->string('keterangan');
+            $table->string('kode');
             $table->integer('status');
             $table->integer('urut' );
             $table->timestamps();

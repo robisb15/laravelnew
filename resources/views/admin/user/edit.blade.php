@@ -24,17 +24,17 @@
                             <div class="mt-3">
 
                                 <label for="">Nama</label> 
-                                <input type="text" name="nama" class="form-control" required value="{{ $user->nama }}">
+                                <input type="text" name="nama" class="form-control" required value="{{ $user?$user->nama:'' }}">
                             </div>
                              <div class="mt-3">
 
                                 <label for="">Username</label>
-                                <input type="text" name="name" class="form-control" required value="{{$user->name }}">
+                                <input type="text" name="name"  class="form-control" required value="{{$user? $user->name:''}}">
                             </div>
                             <div class="mt-3">
                                 
                                 <label for="">Email</label> 
-                                <input type="text" name="email" class="form-control" required value="{{ $user->email }}">
+                                <input type="text" name="email" class="form-control" required value="{{ $user?$user->email:'' }}">
                             </div>
                              <div class="mt-3">
 
@@ -54,20 +54,20 @@
                     <div class="col-md-6">
                         <div class="mt-3">
 
-                                <label for="">NIP</label> 
-                                <input type="text" name="nip" class="form-control" required value="{{ $user->nip }}">
+                                <label for="">NIK</label> 
+                                <input type="text" name="nik" class="form-control" required value="{{ $user? $user->nik:''}}">
                             </div>
                             
                             <div class="mt-3">
 
                                 <label for="">No Hp</label> 
-                                <input type="text" name="telepon" class="form-control" required value="{{ $user->telepon }}">
+                                <input type="text" name="telepon" class="form-control" required value="{{ $user?$user->telepon:'' }}">
                             </div>
                            
                              <div class="mt-3">
 
                                 <label for="">Alamat</label> 
-                                <textarea name="alamat" class="form-control" required rows="4" >{{ $user->alamat }}</textarea>
+                                <textarea name="alamat" class="form-control" required rows="4" >{{ $user?$user->alamat:'' }}</textarea>
                             </div>
                         </div>
                     </div>

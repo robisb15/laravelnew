@@ -28,19 +28,32 @@ class LayananController extends Controller
         return datatables()->
             of($layanan)
             ->addIndexColumn()
-            ->addColumn('aksi', function ($layanan) {
+            ->addColumn('status_layanan', function ($data) {
                 return [
-                    'id_layanan' => $layanan->id_layanan,
-                    'status' => $layanan->status,
-                    'delete' => '<a href="javascript:;" onclick="deleteForm(\'' . route('layanan.destroy', [$layanan->id_layanan]) . '\')" class="dropdown-item">Hapus</a>',
-                    'edit' => '<a href="javascript:;" onclick="editForm(\'' . route('layanan.update', [$layanan->id_layanan]) . '\', \''. $layanan->nama_layanan.'\',\' ' . $layanan->keterangan . '\')" class="dropdown-item">Edit</a>',
-
+                    'id_layanan' => $data->id_layanan,
+                    'status' => $data->status
                 ];
+            })
+            ->addColumn('aksi', function ($layanan) {
+                return '
+            <div class="">
+        
+                    <a href="javascript:;" onclick="editForm(\'' . route('layanan.update', [$layanan->id_layanan]) . '\', \'' . $layanan->nama_layanan . '\',\' ' . $layanan->keterangan . '\')" class="btn btn-warning btn-sm"> <i class="fa-solid fa-pen"></i></a>
+                    <a href="javascript:;" onclick="deleteForm(\'' . route('layanan.destroy', [$layanan->id_layanan]) . '\')" class="btn btn-danger btn-sm"> <i class="fa-solid fa-trash"></i></a>
+            </div>
+            ';
             })
             ->addColumn('update_urut', function ($update_urut) {
                 return array(
                     'id_layanan' => $update_urut->id_layanan,
                     'urut' => $update_urut->urut,
+
+                );
+            })
+            ->addColumn('update_kode', function ($update_kode) {
+                return array(
+                    'id_layanan' => $update_kode->id_layanan,
+                    'kode' => $update_kode->kode,
 
                 );
             })
@@ -53,7 +66,7 @@ class LayananController extends Controller
                 @endif
                 ';
             })
-            ->rawColumns(['aksi','update_urut','nama_status'])
+            ->rawColumns(['aksi', 'update_urut', 'nama_status'])
             ->make(true);
     }
     public function create()
@@ -67,24 +80,27 @@ class LayananController extends Controller
             'keterangan' => 'required|max:255|string',
             'status' => 'required',
             'urut' => 'required',
+            'kode'=>'required'
         ], [
             'nama_layanan.required' => 'Nama Layanan harus diisi',
-            'nama_layanan.max'=>'Nama maksimal 255 karakter',
+            'nama_layanan.max' => 'Nama maksimal 255 karakter',
             'keterangan.required' => 'Keterangan harus diisi',
-            'keterangan.max'=>'Keterangan maksimal 255 karakter',
+            'keterangan.max' => 'Keterangan maksimal 255 karakter',
             'urut.required' => 'Nomor Urut harus diisi',
+            'kode.required' => 'Kode harus diisi',
         ]);
         $oldLayanan = Layanan::where('urut', $request->urut)->first();
         if ($oldLayanan) {
             $layanan = Layanan::get();
             $oldLayanan->update(['urut' => count($layanan) + 1]);
         }
-        $layanan=Layanan::create([
+        $layanan = Layanan::create([
             'id_layanan' => Str::uuid(4),
             'nama_layanan' => $request->nama_layanan,
             'keterangan' => $request->keterangan,
             'status' => $request->status,
             'urut' => $request->urut,
+            'kode' => $request->kode
         ]);
         Log::info('Berhasil Menambahkan Layanan', [
             'user' => Auth::id(),
@@ -95,7 +111,6 @@ class LayananController extends Controller
         Alert::success('Berhasil', 'Layanan Ditambahkan');
         return redirect()->route('layanan.index');
     }
-
     public function urut(Request $request, $id)
     {
         if (!$request->urut) {
@@ -111,7 +126,6 @@ class LayananController extends Controller
         $newLayanan = Layanan::where('id_layanan', $id)->first();
         $oldlayanan = Layanan::where('urut', $request->urut)->first();
         if ($oldlayanan) {
-
             $oldlayanan->update(['urut' => $newLayanan->urut]);
         }
         $newLayanan->update(['urut' => $request->urut]);
@@ -124,9 +138,36 @@ class LayananController extends Controller
         Alert::success('Berhasil', 'Urutan Diperbarui');
         return back();
     }
+    public function kode(Request $request, $id)
+    {
+        if (!$request->kode) {
+            Log::warning('Gagal Memperbarui data', [
+                'user' => Auth::id(),
+                'status' => 'Gagal',
+                'layanan' => $id,
+                'message' => 'User memperbarui nomor urut layanan',
+            ]);
+            Alert::warning('Gagal', 'Kode Tidak Boleh Kosong');
+            return redirect()->route('layanan.index');
+        }
+        $layanan = Layanan::where('id_layanan', $id)->update(['kode' => $request->kode]);
+        Log::info('Berhasil Memperbarui Layanan', [
+            'user' => Auth::id(),
+            'status' => 'Berhasil',
+            'layanan' => $id,
+            'message' => 'User berhasil memperbarui kode layanan',
+        ]);
+        Alert::success('Berhasil', 'Kode Diperbarui');
+        return back();
+    }
     public function status(Request $request, $id)
     {
-        Layanan::where('id_layanan', $id)->update(['status' => $request->status]);
+        $layanan = Layanan::where('id_layanan', $id)->first();
+        if ($layanan->status == 1) {
+            $layanan->update(['status' => 0]);
+        } elseif ($layanan->status == 0) {
+            $layanan->update(['status' => 1]);
+        }
         Log::info('Berhasil Memperbarui status layanan', [
             'user' => Auth::id(),
             'status' => 'berhasil',
@@ -162,7 +203,8 @@ class LayananController extends Controller
         return redirect()->route('layanan.index');
 
     }
-    public function destroy($id){
+    public function destroy($id)
+    {
         Layanan::where('id_layanan', $id)->delete();
         Log::info('Berhasil menghapus layanan', [
             'user' => Auth::id(),

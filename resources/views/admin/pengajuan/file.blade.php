@@ -12,6 +12,8 @@
             </div>
             <div class="modal-body">
                 <div class="row">
+                    @if($pendaftaran->status !== '3' && $pendaftaran->status !== '4' )
+                  
                     <div class="col-md-12">
                         <form action="{{ route('pengajuan.konfirmasi-berkas') }}" method="post">
                             @csrf
@@ -41,11 +43,18 @@
                         </div>
                         </form>
                     </div>
+                    @endif
                 </div>
                 <div class="row mt-3">
                     <div class="col-md-12">
-                        <iframe id="pdf" src ="{{ route('storage.view', $item->id_berkas) }}" width="100%"
-                            height="450px"></iframe>
+                        @php
+                            $file = $item->nama_file;
+                            $nama_file = str_replace('.pdf', '', $file);
+                        @endphp
+                        <iframe id="pdf"
+                            src ="{{ url('/files/download/' . $nama_file . '?id_berkas=' . $item->id_berkas) }}"
+                            width="100%" height="450px"></iframe> 
+                     
                     </div>
 
                 </div>

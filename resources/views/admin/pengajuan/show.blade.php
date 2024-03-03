@@ -9,7 +9,7 @@
                     <h5>Kode {{ $pendaftaran->kode_pendaftaran }}</h5>
                     <table class="table">
                         @foreach ($isiFormulir as $item)
-                        @if ($item->jenis == 'date')
+                            @if ($item->jenis == 'date')
                                 <tr>
                                     <td width="20%">{{ $item->nama_formulir }}</td>
                                     <td>: {{ \Carbon\Carbon::parse($item->isi)->format('d M Y') }}</td>
@@ -31,9 +31,21 @@
                     <h5>Status Pendaftaran:</h5>
                     <h6>
 
-                        <span class="badge bg-warning">{{ $pendaftaran->nama }}</span>
-                    </h6>
-                    <p><span>{{ $pendaftaran->keterangan }}</span>
+                        @if($pendaftaran->status == '1')
+                            <span class="badge bg-secondary">{{ $pendaftaran->nama }}</span>
+                            @elseif($pendaftaran->status == '2')
+                            <span class="badge bg-primary">{{ $pendaftaran->nama }}</span>
+                            @elseif($pendaftaran->status == '3')
+                            <span class="badge bg-warning">{{ $pendaftaran->nama }}</span>
+                            @elseif($pendaftaran->status =='4')
+                            <span class="badge bg-success">{{ $pendaftaran->nama }}</span>
+                            @elseif($pendaftaran->status == '5')
+                            <span class="badge bg-danger">{{ $pendaftaran->nama }}</span>
+                            @endif
+                        </h6>
+                        <span>{{ $pendaftaran->keterangan }}</span>
+                        <p>
+                    <a href="{{ url('admin/syarat-berkas/layanan/'.$pendaftaran->id_layanan) }}" class="btn btn-info">Lihat Syarat Berkas</a>
                     </p>
                     @if ($pendaftaran->url)
                         <div class="col-md-12">
@@ -119,7 +131,7 @@
         </div>
 
         <!-- Modal Selesai -->
-         @includeIf('admin.pengajuan.selesai')
+        @includeIf('admin.pengajuan.selesai')
         <!-- Modal Konfirmasi -->
         @includeIf('admin.pengajuan.konfirmasi')
 
